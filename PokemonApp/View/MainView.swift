@@ -10,27 +10,29 @@ import SwiftUI
 struct MainView: View {
     
     @ObservedObject var viewModel = MainViewModel()
-    
+
     var body: some View {
+        
         NavigationStack{
             
             ScrollView{
                 ForEach(viewModel.pokemons){ data in
-                    NavigationLink(destination: EmptyView()) {
+                    NavigationLink(destination: {
+                        Text(data.name)
+                    }) {
                         PokemonLine(pokemon: data)
-                    }
+                    }.buttonStyle(PlainButtonStyle())
                 }
-            }
-            
+            }.id(UUID().uuidString)
             .navigationTitle("Pokemons")
         }
-        .padding()
+        .background(.secondary)
         .onAppear{
-            Task {
-                try await viewModel.loader()
+            Task{
+                try await viewModel.getAllPokemons()
             }
-            
         }
+        .padding()
         
     }
 }

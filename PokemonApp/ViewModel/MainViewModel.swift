@@ -10,32 +10,30 @@ import Foundation
 
 class MainViewModel : ObservableObject{
     
-    @Published var pokemons : [Results] = []
+    @Published var pokemons : [MainPokemonModel] = []
     
-    public func loader() async throws {
+    public func getAllPokemons() async throws {
         
-        guard let url = URL(string: "https://pokeapi.co/api/v2/pokemon?limit=30") else{
-            fatalError("Wrong URL")
-        }
-        let urlRequest = URLRequest(url: url)
-        let (data,response) = try await URLSession.shared.data(for: urlRequest)
-        
-        guard (response as? HTTPURLResponse)?.statusCode == 200 else{
-            fatalError("Error, data couldn't fetched")
+        if(pokemons.count == 40){
+            return
         }
         
-        let decodedData = try JSONDecoder().decode(MainPokemonModel.self, from: data)
-        DispatchQueue.main.async {
-            decodedData.results!.forEach { d in
-                self.pokemons.append(Results(name: d.name!, url: d.url!))
+        for i in 1...40{
+            guard let url = URL(string: "https://pokeapi.co/api/v2/pokemon/\(i)") else{
+                fatalError("Wrong URL")
+            }
+            let urlRequest = URLRequest(url: url)
+            let (data,response) = try await URLSession.shared.data(for: urlRequest)
+            
+            guard (response as? HTTPURLResponse)?.statusCode == 200 else{
+                fatalError("Error, data couldn't fetched")
+            }
+            
+            let pokemonData = try JSONDecoder().decode(MainPokemonModel.self, from: data)
+            DispatchQueue.main.async {
+                self.pokemons.append(pokemonData)
             }
         }
+        
     }
-    
-    public func displayData(){
-        self.pokemons.forEach { p in
-            print(p.id!)
-        }
-    }
-    
 }

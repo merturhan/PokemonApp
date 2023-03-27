@@ -10,24 +10,29 @@ import SwiftUI
 struct PokemonLine: View {
     
     @State private var name : String = ""
-    @State var pokemon : Results
+    @State var pokemon : MainPokemonModel
     
     var body: some View {
         
         HStack{
-            Rectangle()
-                .frame(width: 125, height: 125, alignment: .center)
-                .padding(.horizontal)
+            AsyncImage(url: URL(string: pokemon.sprites.front_default)) { image in
+                image
+                    .resizable()
+                    .frame(width: 150, height: 150)
+                    .padding(.horizontal)
+            } placeholder: {
+                ProgressView()
+            }
+                
         
             Spacer()
             Text(name)
                 .font(.custom("Avenir", size: 30))
                 .padding(.horizontal)
         }
-        .frame(width: UIScreen.main.bounds.width)
-        .border(.red)
+        .frame(width: UIScreen.main.bounds.width, height: 150)
         .onAppear{
-            name = pokemon.name!
+            name = pokemon.name
         }
         
     }
