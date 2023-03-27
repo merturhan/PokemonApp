@@ -10,19 +10,24 @@ import SwiftUI
 struct MainView: View {
     
     @ObservedObject var viewModel = MainViewModel()
+    let columns = [GridItem(.flexible()), GridItem(.flexible())]
 
     var body: some View {
         
         NavigationStack{
             
             ScrollView{
-                ForEach(viewModel.pokemons){ data in
-                    NavigationLink(destination: {
-                        Text(data.name)
-                    }) {
-                        PokemonLine(pokemon: data)
-                    }.buttonStyle(PlainButtonStyle())
+                
+                LazyVGrid(columns: columns){
+                    ForEach(viewModel.pokemons){ data in
+                        NavigationLink(destination: {
+                            Text(data.name)
+                        }) {
+                            PokemonGrid(pokemon: data)
+                        }.buttonStyle(PlainButtonStyle())
+                    }
                 }
+                
             }.id(UUID().uuidString)
             .navigationTitle("Pokemons")
         }
